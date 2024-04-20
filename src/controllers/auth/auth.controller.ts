@@ -1,9 +1,30 @@
 import { Handler } from '@sonic-tech/catena'
 import { Router } from 'express'
 import { z } from 'zod'
-import { prisma } from '../../prisma/client.prisma'
+import { signup } from '../../services/auth/auth.service'
+import { authMiddleware } from '../../middlewares/auth.middleware'
+import { meTransformer } from '../../transformers/auth.transformer'
 
 export const authController = Router()
+
+authController.get(
+    '/me',
+    new Handler()
+        .middleware(authMiddleware)
+        .resolve(async (_req, _res, context) => {
+            const { user } = context
+
+            return {
+                user,
+            }
+        })
+        .transform((data) => {
+            return {
+                user: meTransformer(data.user),
+            }
+        })
+        .express()
+)
 
 authController.post(
     '/signup',
@@ -17,19 +38,16 @@ authController.post(
         })
         .resolve(async (req) => {
             const { username, firstName, lastName, email, password } = req.body
-            const user = await prisma.user.create({
-                data: {
-                    username,
-                    firstName,
-                    lastName,
-                    email,
-                    password,
-                },
+
+            const signupResponse = await signup({
+                username,
+                firstName,
+                lastName,
+                email,
+                password,
             })
 
-            return {
-                user,
-            }
+            return signupResponse
         })
         .transform((data) => {
             return {

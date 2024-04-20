@@ -1,12 +1,12 @@
 const keys = ['DATABASE_URL', 'NODE_ENV', 'JWT_SECRET']
 
-interface I_ENV {
+interface IENV {
     DATABASE_URL: string
     NODE_ENV: 'development' | 'production' | 'test'
     JWT_SECRET: string
 }
 
-function env(): I_ENV {
+function env(): IENV {
     for (const key of keys) {
         if (key === 'NODE_ENV') {
             continue
