@@ -2,7 +2,13 @@ import { User } from '@prisma/client'
 import jwt from 'jsonwebtoken'
 import { ENV } from '../env'
 
-export function createJwt(type: JwtType, user: User): string {
+export function createJwt({
+    type,
+    user,
+}: {
+    type: JwtType
+    user: User
+}): string {
     const payload: JwtPayload = {
         type,
         id: user.id,
@@ -11,7 +17,7 @@ export function createJwt(type: JwtType, user: User): string {
     return jwt.sign(payload, ENV.JWT_SECRET)
 }
 
-export function verifyJwt(token: string): JwtPayload {
+export function verifyJwt({ token }: { token: string }): JwtPayload {
     const payload = jwt.verify(token, ENV.JWT_SECRET)
 
     if (typeof payload !== 'object') {
@@ -41,12 +47,12 @@ export function verifyJwt(token: string): JwtPayload {
     return payload as JwtPayload
 }
 
-enum JwtType {
+export enum JwtType {
     Auth = 'auth',
     MagicLink = 'magic-link',
 }
 
-type JwtPayload = {
+export type JwtPayload = {
     type: JwtType
     id: string
     issuedAt: string
