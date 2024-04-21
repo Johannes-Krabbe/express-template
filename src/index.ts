@@ -1,5 +1,6 @@
 import express from 'express'
 import { ENV } from './env'
+import { router } from './router'
 const app = express()
 const port = 8080
 
@@ -8,7 +9,8 @@ ENV
 
 app.use(express.json())
 
+app.use(router)
+
 app.listen(port, () => {
-    console.log(`Example app listening on port ${port}`)
-    console.log(process.env.TEST)
+    console.log(`Server started on port ${port}`)
 })
